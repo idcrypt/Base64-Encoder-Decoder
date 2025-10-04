@@ -1,0 +1,123 @@
+/* Dark base */
+body {
+  margin: 0;
+  font-family: 'Arial', sans-serif;
+  background: #0f0f0f;
+  color: #f0f0f0;
+}
+
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,255,255,0.2);
+}
+
+h1.neon {
+  color: #0ff;
+  text-align: center;
+  font-size: 2.4em;
+  text-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff;
+}
+
+p.muted {
+  text-align: center;
+  color: #aaa;
+}
+
+.section {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.section label {
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+textarea {
+  background: #111;
+  color: #0ff;
+  border: 1px solid #0ff;
+  border-radius: 6px;
+  padding: 10px;
+  min-height: 100px;
+  resize: vertical;
+}
+
+input[type="file"] {
+  background: #111;
+  color: #0ff;
+  border: 1px solid #0ff;
+  padding: 6px;
+  border-radius: 6px;
+}
+
+.buttons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+button.neon-btn {
+  background: #0ff;
+  color: #111;
+  border: none;
+  padding: 10px 16px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 0 10px #0ff, 0 0 20px #0ff;
+  transition: 0.2s;
+}
+
+button.neon-btn:hover {
+  box-shadow: 0 0 20px #0ff, 0 0 30px #0ff;
+}
+
+button.ghost-btn {
+  background: transparent;
+  border: 1px solid #0ff;
+  color: #0ff;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+button.ghost-btn:hover {
+  background: #0ff;
+  color: #111;
+}
+
+textarea:focus, input:focus {
+  outline: none;
+  border-color: #0ff;
+  box-shadow: 0 0 10px #0ff;
+}
+
+.download-link {
+  display: inline-block;
+  margin-top: 10px;
+  color: #0ff;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.download-link:hover {
+  text-decoration: underline;
+}
+
+.download-link.hidden {
+  display: none;
+}
+
+footer {
+  margin-top: 30px;
+  text-align: center;
+  color: #666;
+}
