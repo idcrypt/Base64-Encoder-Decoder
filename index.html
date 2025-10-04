@@ -1,40 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Base64 Encoder / Decoder — Dark</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Base64 Encoder / Decoder</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 <main class="container">
-  <h1 class="neon">💻 Base64 Encoder / Decoder</h1>
-  <p class="muted">Encode or decode text and files directly in your browser. Fully client-side & dark mode.</p>
+  <h1 class="neon">🔒 Advanced Base64 Encoder / Decoder</h1>
+  <p class="muted">Encode/decode text, images, PDFs, audio, or video. Drag & drop supported. Copy results easily!</p>
 
-  <section class="section">
-    <label for="textInput">Text Input:</label>
-    <textarea id="textInput" placeholder="Type text or paste Base64..."></textarea>
+  <section class="tool">
+    <div id="dropZone" class="drop-zone">
+      Drag & Drop File Here or Enter Text
+    </div>
+    <textarea id="inputArea" placeholder="Enter text or Base64 here..."></textarea>
+
+    <div class="buttons">
+      <button id="encodeBtn" class="neon-btn">Encode → Base64</button>
+      <button id="decodeBtn" class="neon-btn">Decode ← Base64</button>
+      <button id="copyBtn" class="ghost-btn">Copy Result</button>
+      <button id="clearBtn" class="ghost-btn">Clear</button>
+    </div>
+
+    <textarea id="outputArea" placeholder="Output will appear here..." readonly></textarea>
+
+    <div id="previewContainer" class="preview-container hidden">
+      <h3>Preview:</h3>
+      <img id="previewImg" alt="Preview Image" class="hidden"/>
+      <iframe id="previewPDF" class="hidden"></iframe>
+      <audio id="previewAudio" controls class="hidden"></audio>
+      <video id="previewVideo" controls class="hidden"></video>
+    </div>
   </section>
 
-  <section class="section">
-    <label for="fileInput">File Input (optional):</label>
-    <input type="file" id="fileInput">
+  <section class="info">
+    <h2>How it works</h2>
+    <p><strong>Encode:</strong> Converts text or file content into Base64. Maximum safe size for browser: ~50-100MB depending on memory.</p>
+    <p><strong>Decode:</strong> Converts Base64 back to original text, image, PDF, audio, or video.</p>
+    <p><strong>Example:</strong></p>
+    <ul>
+      <li>Encode text: "Hello" → "SGVsbG8="</li>
+      <li>Decode text: "SGVsbG8=" → "Hello"</li>
+      <li>Encode file: image.png → Base64 string → decode → preview image</li>
+    </ul>
   </section>
 
-  <section class="section buttons">
-    <button id="encodeBtn" class="neon-btn">Encode → Base64</button>
-    <button id="decodeBtn" class="neon-btn">Decode ← Base64</button>
-    <button id="clearBtn" class="ghost-btn">Clear</button>
-  </section>
-
-  <section class="section">
-    <label for="output">Output:</label>
-    <textarea id="output" readonly placeholder="Result will appear here"></textarea>
-    <a id="downloadLink" class="download-link hidden">⬇️ Download File</a>
-  </section>
-
-  <footer>
-    <small>Client-side only — safe & fast. Dark mode ready!</small>
+  <footer class="foot">
+    <small>Fully client-side. Dark mode. Drag & drop supported. Works on GitHub Pages.</small>
   </footer>
 </main>
 
