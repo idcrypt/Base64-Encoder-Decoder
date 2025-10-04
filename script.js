@@ -1,90 +1,129 @@
-// ==============================
-// Base64 Encoder / Decoder
-// ==============================
-
-const textInput = document.getElementById("textInput");
-const fileInput = document.getElementById("fileInput");
-const output = document.getElementById("output");
+const dropZone = document.getElementById("dropZone");
+const inputArea = document.getElementById("inputArea");
+const outputArea = document.getElementById("outputArea");
 const encodeBtn = document.getElementById("encodeBtn");
 const decodeBtn = document.getElementById("decodeBtn");
+const copyBtn = document.getElementById("copyBtn");
 const clearBtn = document.getElementById("clearBtn");
-const downloadLink = document.getElementById("downloadLink");
 
-// ==============================
-// Helper functions
-// ==============================
-function showOutput(text) {
-  output.value = text;
-  downloadLink.classList.add("hidden");
-}
+const previewContainer = document.getElementById("previewContainer");
+const previewImg = document.getElementById("previewImg");
+const previewPDF = document.getElementById("previewPDF");
+const previewAudio = document.getElementById("previewAudio");
+const previewVideo = document.getElementById("previewVideo");
 
-function base64EncodeText(str) {
-  return btoa(unescape(encodeURIComponent(str)));
-}
+// ======================
+// Drag & Drop
+// ======================
+dropZone.addEventListener("dragover", e=>{
+  e.preventDefault();
+  dropZone.classList.add("dragover");
+});
+dropZone.addEventListener("dragleave", e=>{
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+});
+dropZone.addEventListener("drop", e=>{
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+  const file = e.dataTransfer.files[0];
+  if(!file) return;
 
-function base64DecodeText(str) {
-  return decodeURIComponent(escape(atob(str)));
-}
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    inputArea.value = reader.result;
+    showPreview(file.type, reader.result);
+  };
+  reader.readAsDataURL(file);
+});
 
-function readFileAsArrayBuffer(file) {
-  return new Promise((resolve, reject)=>{
-    const reader = new FileReader();
-    reader.onload = ()=>resolve(reader.result);
-    reader.onerror = ()=>reject(reader.error);
-    reader.readAsArrayBuffer(file);
-  });
-}
+// ======================
+// Encode
+// ======================
+encodeBtn.addEventListener("click", ()=>{
+  try{
+    const input = inputArea.value;
+    if(!input) return alert("Input area empty!");
+    const encoded = btoa(unescape(encodeURIComponent(input)));
+    outputArea.value = encoded;
+    hideAllPreview();
+  } catch(e){
+    alert("Encoding failed");
+    console.error(e);
+  }
+});
 
-// ==============================
-// Encode / Decode
-// ==============================
-encodeBtn.addEventListener("click", async ()=>{
-  try {
-    if(fileInput.files.length>0){
-      const file = fileInput.files[0];
-      const buffer = await readFileAsArrayBuffer(file);
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(buffer)));
-      showOutput(base64);
-      downloadLink.href = "data:application/octet-stream;base64,"+base64;
-      downloadLink.download = file.name+".b64";
-      downloadLink.classList.remove("hidden");
+// ======================
+// Decode
+// ======================
+decodeBtn.addEventListener("click", ()=>{
+  try{
+    const input = inputArea.value;
+    if(!input) return alert("Input area empty!");
+    const decoded = decodeURIComponent(escape(atob(input)));
+    outputArea.value = decoded;
+
+    // Try preview
+    if(decoded.startsWith("data:image/")){
+      showPreview("image", decoded);
+    } else if(decoded.startsWith("%PDF-") || decoded.startsWith("JVBER")) {
+      showPreview("application/pdf", decoded);
     } else {
-      const text = textInput.value;
-      if(!text) return alert("Masukkan teks atau pilih file");
-      showOutput(base64EncodeText(text));
+      hideAllPreview();
     }
   } catch(e){
-    alert("Encode error: "+e);
+    alert("Decoding failed. Ensure valid Base64.");
+    console.error(e);
+    hideAllPreview();
   }
 });
 
-decodeBtn.addEventListener("click", async ()=>{
-  try {
-    const base64 = textInput.value.trim();
-    if(!base64) return alert("Masukkan Base64 untuk didecode");
-
-    // coba decode sebagai file (binary)
-    try {
-      const binary = Uint8Array.from(atob(base64), c=>c.charCodeAt(0));
-      const blob = new Blob([binary]);
-      downloadLink.href = URL.createObjectURL(blob);
-      downloadLink.download = "decoded_file";
-      downloadLink.classList.remove("hidden");
-      showOutput(base64DecodeText(base64));
-    } catch(e){
-      // fallback: decode sebagai text
-      showOutput(base64DecodeText(base64));
-    }
-
-  } catch(e){
-    alert("Decode error: "+e);
-  }
+// ======================
+// Copy
+// ======================
+copyBtn.addEventListener("click", ()=>{
+  if(!outputArea.value) return;
+  outputArea.select();
+  document.execCommand("copy");
+  alert("Result copied to clipboard!");
 });
 
+// ======================
 // Clear
+// ======================
 clearBtn.addEventListener("click", ()=>{
-  textInput.value = "";
-  output.value = "";
-  fileInput.value = "";
-  downloadLink.classList.add("hidden");
+  inputArea.value = "";
+  outputArea.value = "";
+  hideAllPreview();
 });
+
+// ======================
+// Preview helper
+// ======================
+function showPreview(type, src){
+  hideAllPreview();
+  previewContainer.classList.remove("hidden");
+  if(type.startsWith("image/")){
+    previewImg.src = src;
+    previewImg.classList.remove("hidden");
+  } else if(type==="application/pdf"){
+    previewPDF.src = src;
+    previewPDF.classList.remove("hidden");
+  } else if(type.startsWith("audio/")){
+    previewAudio.src = src;
+    previewAudio.classList.remove("hidden");
+  } else if(type.startsWith("video/")){
+    previewVideo.src = src;
+    previewVideo.classList.remove("hidden");
+  } else {
+    hideAllPreview();
+  }
+}
+
+function hideAllPreview(){
+  previewContainer.classList.add("hidden");
+  previewImg.classList.add("hidden");
+  previewPDF.classList.add("hidden");
+  previewAudio.classList.add("hidden");
+  previewVideo.classList.add("hidden");
+}
