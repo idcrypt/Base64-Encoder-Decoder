@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base64 Encoder / Decoder — Dark</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="container">
+  <h1 class="neon">💻 Base64 Encoder / Decoder</h1>
+  <p class="muted">Encode or decode text and files directly in your browser. Fully client-side & dark mode.</p>
+
+  <section class="section">
+    <label for="textInput">Text Input:</label>
+    <textarea id="textInput" placeholder="Type text or paste Base64..."></textarea>
+  </section>
+
+  <section class="section">
+    <label for="fileInput">File Input (optional):</label>
+    <input type="file" id="fileInput">
+  </section>
+
+  <section class="section buttons">
+    <button id="encodeBtn" class="neon-btn">Encode → Base64</button>
+    <button id="decodeBtn" class="neon-btn">Decode ← Base64</button>
+    <button id="clearBtn" class="ghost-btn">Clear</button>
+  </section>
+
+  <section class="section">
+    <label for="output">Output:</label>
+    <textarea id="output" readonly placeholder="Result will appear here"></textarea>
+    <a id="downloadLink" class="download-link hidden">⬇️ Download File</a>
+  </section>
+
+  <footer>
+    <small>Client-side only — safe & fast. Dark mode ready!</small>
+  </footer>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
