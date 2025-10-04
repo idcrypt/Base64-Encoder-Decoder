@@ -1,129 +1,127 @@
+// ==============================
+// Base64 Encoder / Decoder — Full Version
+// ==============================
+
+// Elements
 const dropZone = document.getElementById("dropZone");
 const inputArea = document.getElementById("inputArea");
-const outputArea = document.getElementById("outputArea");
 const encodeBtn = document.getElementById("encodeBtn");
 const decodeBtn = document.getElementById("decodeBtn");
+const outputArea = document.getElementById("outputArea");
 const copyBtn = document.getElementById("copyBtn");
 const clearBtn = document.getElementById("clearBtn");
+const previewArea = document.getElementById("preview");
 
-const previewContainer = document.getElementById("previewContainer");
-const previewImg = document.getElementById("previewImg");
-const previewPDF = document.getElementById("previewPDF");
-const previewAudio = document.getElementById("previewAudio");
-const previewVideo = document.getElementById("previewVideo");
+// Hidden file input for click upload
+const fileInput = document.createElement("input");
+fileInput.type = "file";
+fileInput.style.display = "none";
 
-// ======================
-// Drag & Drop
-// ======================
+// ==============================
+// Helpers
+// ==============================
+function showPreview(type, dataURL){
+    previewArea.innerHTML = "";
+    if(type.startsWith("image/")){
+        const img = document.createElement("img");
+        img.src = dataURL;
+        img.style.maxWidth = "100%";
+        previewArea.appendChild(img);
+    } else if(type.startsWith("audio/")){
+        const audio = document.createElement("audio");
+        audio.controls = true;
+        audio.src = dataURL;
+        previewArea.appendChild(audio);
+    } else if(type.startsWith("video/")){
+        const video = document.createElement("video");
+        video.controls = true;
+        video.src = dataURL;
+        video.style.maxWidth = "100%";
+        previewArea.appendChild(video);
+    } else {
+        previewArea.textContent = "File preview not available.";
+    }
+}
+
+// ==============================
+// Drag & Drop + Click Upload
+// ==============================
+dropZone.addEventListener("click", ()=> fileInput.click());
+
+fileInput.addEventListener("change", e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=> {
+        inputArea.value = reader.result;
+        showPreview(file.type, reader.result);
+    };
+    reader.readAsDataURL(file);
+});
+
 dropZone.addEventListener("dragover", e=>{
-  e.preventDefault();
-  dropZone.classList.add("dragover");
+    e.preventDefault();
+    dropZone.classList.add("dragover");
 });
 dropZone.addEventListener("dragleave", e=>{
-  e.preventDefault();
-  dropZone.classList.remove("dragover");
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
 });
 dropZone.addEventListener("drop", e=>{
-  e.preventDefault();
-  dropZone.classList.remove("dragover");
-  const file = e.dataTransfer.files[0];
-  if(!file) return;
-
-  const reader = new FileReader();
-  reader.onload = ()=>{
-    inputArea.value = reader.result;
-    showPreview(file.type, reader.result);
-  };
-  reader.readAsDataURL(file);
+    e.preventDefault();
+    dropZone.classList.remove("dragover");
+    const file = e.dataTransfer.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = ()=>{
+        inputArea.value = reader.result;
+        showPreview(file.type, reader.result);
+    };
+    reader.readAsDataURL(file);
 });
 
-// ======================
-// Encode
-// ======================
+// ==============================
+// Encode / Decode
+// ==============================
 encodeBtn.addEventListener("click", ()=>{
-  try{
-    const input = inputArea.value;
-    if(!input) return alert("Input area empty!");
-    const encoded = btoa(unescape(encodeURIComponent(input)));
-    outputArea.value = encoded;
-    hideAllPreview();
-  } catch(e){
-    alert("Encoding failed");
-    console.error(e);
-  }
-});
-
-// ======================
-// Decode
-// ======================
-decodeBtn.addEventListener("click", ()=>{
-  try{
-    const input = inputArea.value;
-    if(!input) return alert("Input area empty!");
-    const decoded = decodeURIComponent(escape(atob(input)));
-    outputArea.value = decoded;
-
-    // Try preview
-    if(decoded.startsWith("data:image/")){
-      showPreview("image", decoded);
-    } else if(decoded.startsWith("%PDF-") || decoded.startsWith("JVBER")) {
-      showPreview("application/pdf", decoded);
-    } else {
-      hideAllPreview();
+    try{
+        const text = inputArea.value;
+        if(!text) throw new Error("Input is empty.");
+        outputArea.value = btoa(text);
+    } catch(err){
+        alert("Encoding failed: " + err.message);
     }
-  } catch(e){
-    alert("Decoding failed. Ensure valid Base64.");
-    console.error(e);
-    hideAllPreview();
-  }
 });
 
-// ======================
-// Copy
-// ======================
+decodeBtn.addEventListener("click", ()=>{
+    try{
+        const text = inputArea.value;
+        if(!text) throw new Error("Input is empty.");
+        outputArea.value = atob(text);
+    } catch(err){
+        alert("Decoding failed: " + err.message);
+    }
+});
+
+// ==============================
+// Copy result
+// ==============================
 copyBtn.addEventListener("click", ()=>{
-  if(!outputArea.value) return;
-  outputArea.select();
-  document.execCommand("copy");
-  alert("Result copied to clipboard!");
+    if(!outputArea.value){
+        alert("Nothing to copy.");
+        return;
+    }
+    outputArea.select();
+    outputArea.setSelectionRange(0,99999);
+    document.execCommand("copy");
+    alert("Copied to clipboard!");
 });
 
-// ======================
-// Clear
-// ======================
+// ==============================
+// Clear all
+// ==============================
 clearBtn.addEventListener("click", ()=>{
-  inputArea.value = "";
-  outputArea.value = "";
-  hideAllPreview();
+    inputArea.value = "";
+    outputArea.value = "";
+    previewArea.innerHTML = "";
 });
-
-// ======================
-// Preview helper
-// ======================
-function showPreview(type, src){
-  hideAllPreview();
-  previewContainer.classList.remove("hidden");
-  if(type.startsWith("image/")){
-    previewImg.src = src;
-    previewImg.classList.remove("hidden");
-  } else if(type==="application/pdf"){
-    previewPDF.src = src;
-    previewPDF.classList.remove("hidden");
-  } else if(type.startsWith("audio/")){
-    previewAudio.src = src;
-    previewAudio.classList.remove("hidden");
-  } else if(type.startsWith("video/")){
-    previewVideo.src = src;
-    previewVideo.classList.remove("hidden");
-  } else {
-    hideAllPreview();
-  }
-}
-
-function hideAllPreview(){
-  previewContainer.classList.add("hidden");
-  previewImg.classList.add("hidden");
-  previewPDF.classList.add("hidden");
-  previewAudio.classList.add("hidden");
-  previewVideo.classList.add("hidden");
-}
